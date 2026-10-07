@@ -304,3 +304,7 @@ Prompts written by Fran, recorded verbatim and grouped by problem.
 > 3 ok
 
 > ok run it
+
+> now add to output/github_url.html the link for this github project you have just published
+>
+> send me this here too
