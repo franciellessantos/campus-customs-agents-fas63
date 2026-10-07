@@ -1,0 +1,18 @@
+# Secrets
+.env
+
+# Shop databases and run state (download data.zip, see README)
+data/*.db
+data/*.resetting
+data/run_state.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+!data/.gitkeep

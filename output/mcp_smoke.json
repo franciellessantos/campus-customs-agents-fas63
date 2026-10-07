@@ -1,0 +1,57 @@
+{
+  "description": "Smoke test of the campus-customs MCP server, called live from Claude Code through .mcp.json. Every output was checked against data/campus_customs_new.db.",
+  "database": "data/campus_customs_new.db",
+  "date_today": "2026-08-31",
+  "tests": [
+    {
+      "ticket": 101,
+      "prompt": "test each of the 3 mcp tools you created and save the evidence in output/mcp_smoke.json showing for every tool the prompt that made it, the name and the tool output, that must match values in data/campus_customs_new.db",
+      "tool": "check_stock",
+      "input": {"sku": "CC-TEE-WHITE", "size": "S"},
+      "output": {"sku": "CC-TEE-WHITE", "name": "Classic Bulldog Tee", "size": "S", "qty": 0, "location": "Aisle B", "unit_cost": 8, "list_price": 28, "unit_margin": 20},
+      "db_check": {
+        "inventory": "('CC-TEE-WHITE', 'Classic Bulldog Tee', 'S', 0, 'Aisle B')",
+        "pricing": "('CC-TEE-WHITE', 8.0, 28.0)",
+        "match": true
+      }
+    },
+    {
+      "ticket": 101,
+      "prompt": "test each of the 3 mcp tools you created and save the evidence in output/mcp_smoke.json showing for every tool the prompt that made it, the name and the tool output, that must match values in data/campus_customs_new.db",
+      "tool": "get_invoice_status",
+      "input": {"invoice_id": 501},
+      "output": {"id": 501, "amount": 840, "due_date": "2026-08-28", "status": "open", "description": "Rush reprint CC-TEE-WHITE S", "vendor_id": 1, "vendor_name": "Bulldog Print Co", "lead_days": 5, "today": "2026-08-31", "days_overdue": 3, "blocks_vendor_delivery": true},
+      "db_check": {
+        "invoices": "(501, 1, 840.0, '2026-08-28', 'open', 'Rush reprint CC-TEE-WHITE S')",
+        "vendors": "(1, 'Bulldog Print Co', 'apparel reprint', 5)",
+        "desk": "('2026-08-31', None)",
+        "match": true
+      }
+    },
+    {
+      "ticket": 102,
+      "prompt": "test each of the 3 mcp tools you created and save the evidence in output/mcp_smoke.json showing for every tool the prompt that made it, the name and the tool output, that must match values in data/campus_customs_new.db",
+      "tool": "get_lease_and_cash",
+      "input": {"lease_id": 1},
+      "output": {"id": 1, "space_name": "Chapel Street shop", "landlord": "Elm City Properties", "monthly_rent": 2400, "next_due": "2026-09-02", "notes": null, "today": "2026-08-31", "days_until_due": 2, "cash_accounts": [{"name": "checking", "balance": 3400, "date": "2026-08-31"}]},
+      "db_check": {
+        "leases": "(1, 'Chapel Street shop', 'Elm City Properties', 2400.0, '2026-09-02', None)",
+        "cash_accounts": "('checking', 3400.0, '2026-08-31')",
+        "match": true
+      }
+    },
+    {
+      "ticket": 103,
+      "prompt": "test each of the 3 mcp tools you created and save the evidence in output/mcp_smoke.json showing for every tool the prompt that made it, the name and the tool output, that must match values in data/campus_customs_new.db",
+      "tool": "check_stock",
+      "input": {"sku": "CC-HOOD-NAVY", "size": "M"},
+      "output": {"sku": "CC-HOOD-NAVY", "name": "Basic Hoodie Big Yale", "size": "M", "qty": 8, "location": "Aisle A", "unit_cost": 22, "list_price": 58, "unit_margin": 36},
+      "db_check": {
+        "inventory": "('CC-HOOD-NAVY', 'Basic Hoodie Big Yale', 'M', 8, 'Aisle A')",
+        "pricing": "('CC-HOOD-NAVY', 22.0, 58.0)",
+        "match": true
+      }
+    }
+  ],
+  "result": "4/4 calls match the database"
+}

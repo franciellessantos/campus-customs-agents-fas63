@@ -1,0 +1,7 @@
+# Python 3.12+
+fastmcp>=4.0.11
+pydantic-ai>=2.43.0
+openai>=3.13.0
+python-dotenv>=1.2.3
+fastapi>=0.142.2
+uvicorn[standard]>=0.52.4

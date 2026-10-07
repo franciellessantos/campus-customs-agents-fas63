@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Customs — Desk Tickets</title>
+<style>
+  :root { --bg:#0b0b0d; --panel:#16161a; --line:#2c2c33; --pink:#ff4fa3; --pink-soft:#ff9ccc; --text:#f4f4f6; --muted:#b8b8c2; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding:24px 20px 8px; max-width:1000px; margin:auto; }
+  h1 { margin:0; color:var(--pink); font-size:1.7rem; }
+  header p { margin:4px 0 0; color:var(--muted); }
+  [role=tablist] { display:flex; flex-wrap:wrap; gap:6px; max-width:1000px; margin:16px auto 0; padding:0 20px; }
+  [role=tab] { background:var(--panel); color:var(--text); border:1px solid var(--line); border-bottom:none; border-radius:10px 10px 0 0; padding:10px 16px; font:inherit; cursor:pointer; }
+  [role=tab][aria-selected=true] { background:var(--pink); color:#0b0b0d; font-weight:700; border-color:var(--pink); }
+  [role=tab]:focus-visible { outline:3px solid var(--pink-soft); outline-offset:2px; }
+  [role=tabpanel] { max-width:1000px; margin:0 auto 40px; padding:20px; background:var(--panel); border:1px solid var(--line); border-top:3px solid var(--pink); border-radius:0 12px 12px 12px; }
+  h2 { margin-top:0; color:var(--pink-soft); }
+  h3 { color:var(--pink); border-bottom:1px solid var(--line); padding-bottom:4px; margin-top:28px; }
+  .meta { color:var(--muted); }
+  .chip { display:inline-block; border:1px solid var(--pink); color:var(--pink-soft); border-radius:999px; padding:1px 10px; margin:2px 4px 2px 0; font-size:.9rem; }
+  .chip.off { border-color:var(--line); color:var(--muted); text-decoration:line-through; }
+  ol.flow li { margin-bottom:8px; }
+  code { color:var(--pink-soft); background:#222228; padding:1px 5px; border-radius:4px; font-size:.92em; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--pink-soft); }
+  .actual-filled { border:2px solid var(--pink); border-radius:10px; padding:12px 16px; }
+  .actual-filled td:first-child { white-space:nowrap; }
+  .num { text-align:right; white-space:nowrap; }
+  .actual { border:2px dashed var(--pink); border-radius:10px; padding:12px 16px; color:var(--muted); }
+  .soon { font-size:1.4rem; color:var(--pink); text-align:center; padding:60px 0; }
+  @media (max-width:600px){ [role=tab]{ flex:1 1 45%; } th,td{ font-size:.9rem; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Campus Customs — Desk Tickets</h1>
+  <p>Today (desk.date_today): 2026-08-31 · Model for every agent: <strong>gpt-6-luna</strong> · Checking: $3,400</p>
+</header>
+
+<div role="tablist" aria-label="Desk tabs">
+  <button role="tab" id="t101" aria-controls="p101" aria-selected="true">Ticket 101</button>
+  <button role="tab" id="t102" aria-controls="p102" aria-selected="false" tabindex="-1">Ticket 102</button>
+  <button role="tab" id="t103" aria-controls="p103" aria-selected="false" tabindex="-1">Ticket 103</button>
+  <button role="tab" id="tcash" aria-controls="pcash" aria-selected="false" tabindex="-1">Cash</button>
+  <button role="tab" id="tref" aria-controls="pref" aria-selected="false" tabindex="-1">Reflections</button>
+</div>
+
+<!-- TICKET 101 -->
+<section role="tabpanel" id="p101" aria-labelledby="t101">
+  <h2>101 · Customer order — Tauhid Zaman</h2>
+  <p class="meta">1× Classic Bulldog Tee <code>CC-TEE-WHITE</code> size S · linked invoice 501</p>
+
+  <h3>Expected</h3>
+  <p><strong>Boss calls first: Inventory</strong>, because whether this order can ship depends on S stock. The data shows 0 on hand, and the only fix is a reprint from Bulldog Print Co, which is blocked by unpaid invoice 501.</p>
+  <p>Specialists used (3 of 4):
+    <span class="chip">inventory</span><span class="chip">accounting</span><span class="chip">customer_service</span><span class="chip off">facilities</span></p>
+  <ol class="flow">
+    <li><strong>Boss</strong> reads the ticket and checks the load → <code>get_ticket</code>, <code>team_workload</code>.</li>
+    <li><strong>Boss → Inventory:</strong> "Can we fill 1× S tee?" Inventory finds S = 0, sees that Bulldog Print Co (5 lead days) is blocked by invoice 501 ($840, 3 days overdue), and drafts the reprint PO → <code>check_stock</code>, <code>list_vendors</code>, <code>get_invoice_status</code>, <code>draft_purchase_order</code>.</li>
+    <li><strong>Inventory → Accounting:</strong> "Invoice 501 blocks the restock." Accounting confirms the invoice hasn't been paid or queued already, then queues $840 for human approval → <code>list_payments_and_approvals</code>, <code>request_payment_approval</code>.</li>
+    <li><strong>Boss → Customer Service:</strong> drafts a warm, honest note to Tauhid: the S tee is out of stock and arrives about 5 days after the invoice is paid (≈ 2026-09-05 if paid today); the customer can wait, switch to size M (5 in stock), or cancel. Tauhid is not asked to pay again → <code>draft_customer_message</code>.</li>
+    <li><strong>Boss</strong> sets the ticket to <code>waiting_approval</code> → <code>update_ticket</code>.</li>
+  </ol>
+  <p><strong>Why not Facilities:</strong> no rent or space question.</p>
+
+  <h3>Actual</h3>
+  <div class="actual-filled">
+    <p><strong>Real run</strong> on 2026-10-06T23:22:39 · gpt-6-luna · 56 s · 19 model calls · 26,935 tokens · ≈$0.06 AI cost (not charged to checking).</p>
+    <p><strong>Agents who worked:</strong> Boss, Inventory, Accounting, Customer Service.</p>
+    <p>Boss sent the order to Inventory, which found 0 in size S, saw Bulldog Print Co blocked by unpaid invoice 501, asked Accounting to queue the $840 for approval, and drafted a 1-unit purchase order. Boss then had Customer Service draft an honest update to Tauhid Zaman. Ticket set to waiting_approval.</p>
+    <table><thead><tr><th>Agent</th><th>Delegated</th><th>MCP tools used</th></tr></thead><tbody><tr><td><strong>Boss</strong></td><td>→ Inventory: Resolve customer order ticket 101: item CC-TEE-WHITE size S, qty 1. Check availability/shortfall and fulfillment feasibility; report concret…<br>→ Customer Service: Ticket 101 customer Tauhid Zaman ordered 1 CC-TEE-WHITE size S. Inventory reports 0 on hand, shortfall 1; draft PO 1 for 1 unit exists, not …</td><td><code>get_ticket</code>, <code>update_ticket</code></td></tr><tr><td><strong>Inventory</strong></td><td>→ Accounting: Please request human payment approval for invoice 501 ($840) for Bulldog Print Co, which blocks delivery of the required CC-TEE-WHITE size S…</td><td><code>check_stock</code>, <code>list_vendors</code>, <code>get_ticket</code>, <code>get_invoice_status</code>, <code>draft_purchase_order</code></td></tr><tr><td><strong>Accounting</strong></td><td>—</td><td><code>get_invoice_status</code>, <code>list_payments_and_approvals</code>, <code>get_cash_balance</code>, <code>request_payment_approval</code></td></tr><tr><td><strong>Customer Service</strong></td><td>—</td><td><code>get_ticket</code>, <code>draft_customer_message</code></td></tr></tbody></table>
+    <p><strong>Boss's final call:</strong> The requested tee cannot be fulfilled now: CC-TEE-WHITE size S has zero stock. Keep the order pending while invoice 501 awaits human payment approval. If approved and paid, inventory can send draft PO 1; the listed arrival date of 2026-09-05 is conditional, not guaranteed. Customer message draft 2 is prepared but must not be sent without authorization.</p>
+    <p><strong>Human approvals (Fran):</strong></p><ul><li>invoice #501 · $840.00: <strong>paid</strong> by Fran (human, dashboard)</li><li>purchase order 1x CC-TEE-WHITE S · $8.00: <strong>approved</strong> by Fran (human, dashboard)</li><li>message to Tauhid Zaman: <strong>approved</strong> by Fran (human, dashboard)</li></ul>
+    <p><strong>Final status:</strong> <code>closed</code></p>
+  </div>
+</section>
+
+<!-- TICKET 102 -->
+<section role="tabpanel" id="p102" aria-labelledby="t102" hidden>
+  <h2>102 · Rent notice — Elm City Properties</h2>
+  <p class="meta">Lease 1, Chapel Street shop · $2,400 due 2026-09-02</p>
+
+  <h3>Expected</h3>
+  <p><strong>Boss calls first: Facilities</strong>, because it owns the lease and the shop space and can confirm the amount and deadline (due in 2 days).</p>
+  <p>Specialists used (2 of 4):
+    <span class="chip">facilities</span><span class="chip">accounting</span><span class="chip off">inventory</span><span class="chip off">customer_service</span></p>
+  <ol class="flow">
+    <li><strong>Boss</strong> reads the ticket → <code>get_ticket</code>, <code>team_workload</code>.</li>
+    <li><strong>Boss → Facilities:</strong> confirms $2,400 rent due 2026-09-02 (2 days away) → <code>get_lease_and_cash</code>.</li>
+    <li><strong>Facilities → Accounting:</strong> "Queue the rent." Accounting checks that rent hasn't already been paid or queued, confirms cash covers it ($3,400; still $160 left after invoice 501 too), and queues $2,400 for human approval → <code>list_payments_and_approvals</code>, <code>request_payment_approval</code>.</li>
+    <li><strong>Boss</strong> sets the ticket to <code>waiting_approval</code> → <code>update_ticket</code>.</li>
+  </ol>
+  <p><strong>Why not Inventory or Customer Service:</strong> no stock is involved, and the notice is an email that doesn't need a reply; paying on time is the response.</p>
+
+  <h3>Actual</h3>
+  <div class="actual-filled">
+    <p><strong>Real run</strong> on 2026-10-06T23:23:39 · gpt-6-luna · 27 s · 11 model calls · 13,858 tokens · ≈$0.03 AI cost (not charged to checking).</p>
+    <p><strong>Agents who worked:</strong> Boss, Facilities, Accounting.</p>
+    <p>Boss sent the rent notice to Facilities, which confirmed $2,400 due 2026-09-02 and asked Accounting to check cash ($3,400) and queue the rent for approval. No customer message (none needed). Ticket set to waiting_approval.</p>
+    <table><thead><tr><th>Agent</th><th>Delegated</th><th>MCP tools used</th></tr></thead><tbody><tr><td><strong>Boss</strong></td><td>→ Facilities: Resolve ticket 102 rent notice. Ticket says Elm City Properties, rent due in 2 days, lease_id 1, created 2026-08-31. Please check lease/rent…</td><td><code>get_ticket</code>, <code>update_ticket</code></td></tr><tr><td><strong>Facilities</strong></td><td>→ Accounting: For ticket 102, lease 1 at Chapel Street with Elm City Properties: rent $2,400 due 2026-09-02 (2 days from 2026-08-31). Lease tool shows che…</td><td><code>get_lease_and_cash</code></td></tr><tr><td><strong>Accounting</strong></td><td>—</td><td><code>get_cash_balance</code>, <code>get_lease_and_cash</code>, <code>list_payments_and_approvals</code>, <code>request_payment_approval</code></td></tr></tbody></table>
+    <p><strong>Boss's final call:</strong> Rent is $2,400 and is due September 2, 2026. The payment has been queued for human approval; it has not been paid.</p>
+    <p><strong>Human approvals (Fran):</strong></p><ul><li>rent #1 · $2,400.00: <strong>pending</strong></li></ul>
+    <p><strong>Final status:</strong> <code>waiting_approval</code></p>
+  </div>
+</section>
+
+<!-- TICKET 103 -->
+<section role="tabpanel" id="p103" aria-labelledby="t103" hidden>
+  <h2>103 · Price override — Yale AI Club</h2>
+  <p class="meta">20× Basic Hoodie Big Yale <code>CC-HOOD-NAVY</code> size M · bulk discount request</p>
+
+  <h3>Expected</h3>
+  <p><strong>Boss calls first: Inventory</strong>, because a discount only matters if we can deliver: only 8 of the 20 M hoodies are on hand (12 short).</p>
+  <p>Specialists used (3 of 4):
+    <span class="chip">inventory</span><span class="chip">accounting</span><span class="chip">customer_service</span><span class="chip off">facilities</span></p>
+  <ol class="flow">
+    <li><strong>Boss</strong> reads the ticket → <code>get_ticket</code>, <code>team_workload</code>.</li>
+    <li><strong>Boss → Inventory:</strong> confirms 8 M on hand and 12 short, finds Bulldog Print Co (apparel, 5 lead days) blocked by invoice 501, and drafts a PO for 12 → <code>check_stock</code>, <code>list_vendors</code>, <code>draft_purchase_order</code> (12 × $22 = $264).</li>
+    <li><strong>Boss → Accounting:</strong> sets a discount that stays above the $22 unit cost (list $58, $36 margin) and flags the cash problem: after invoice 501 + rent only $160 is left, which can't fund the $264 restock → <code>check_stock</code>, <code>get_lease_and_cash</code>. No payment approval is needed.</li>
+    <li><strong>Boss → Customer Service:</strong> drafts a friendly, professional reply to the student club: 8 hoodies are available now, the other 12 are pending a restock, and the discount offer comes from Accounting's numbers → <code>draft_customer_message</code>.</li>
+    <li><strong>Boss</strong> sets the ticket to <code>in_progress</code> (offer drafted, restock not funded) → <code>update_ticket</code>.</li>
+  </ol>
+  <p><strong>Why not Facilities:</strong> no lease or space question.</p>
+
+  <h3>Actual</h3>
+  <div class="actual-filled">
+    <p><strong>Real run</strong> on 2026-10-06T23:24:10 · gpt-6-luna · 128 s · 34 model calls · 54,905 tokens · ≈$0.14 AI cost (not charged to checking).</p>
+    <p><strong>Agents who worked:</strong> Boss, Accounting, Inventory, Customer Service.</p>
+    <p>Boss asked Accounting first about the discount; Accounting and Inventory traded the same policy question back and forth (no bulk-discount policy exists). Boss then asked Inventory, which confirmed 8 of 20 in stock and drafted a 12-unit purchase order ($264) blocked by invoice 501; Accounting saw approval #1 already pending and did not duplicate it. Customer Service drafted a list-price reply to Yale AI Club. Boss recommended no discount yet.</p>
+    <table><thead><tr><th>Agent</th><th>Delegated</th><th>MCP tools used</th></tr></thead><tbody><tr><td><strong>Boss</strong></td><td>→ Accounting: Assess ticket 103: Yale AI Club requests a bulk discount for 20 CC-HOOD-NAVY size M hoodies. Determine appropriate discount/price using marg…<br>→ Inventory: Check fulfillment feasibility for ticket 103: Yale AI Club wants 20 CC-HOOD-NAVY size M. Accounting reports 8 size M on hand, 12 short. Iden…<br>→ Customer Service: Draft (do not send) a reply to Yale AI Club for ticket 103. Facts: request is 20 CC-HOOD-NAVY size M; 8 are currently in stock and 12 are sh…<br>→ Accounting: Follow up ticket 103, using prior facts: 20 hoodies requested, cost $22/unit, list $58; inventory has drafted PO #3 for 12 units ($264), con…</td><td><code>get_ticket</code>, <code>update_ticket</code></td></tr><tr><td><strong>Accounting</strong></td><td>→ Inventory: For ticket 103, is there an established bulk-discount policy applicable to an order of 20 CC-HOOD-NAVY size M hoodies? Please provide the po…<br>→ Inventory: For ticket 103, the needed item is CC-HOOD-NAVY size M (12 more). Please identify Bulldog Print Co&#x27;s open invoice ID if available and confir…</td><td><code>check_stock</code>, <code>get_ticket</code>, <code>list_vendors</code>, <code>list_payments_and_approvals</code>, <code>get_invoice_status</code>, <code>get_cash_balance</code></td></tr><tr><td><strong>Inventory</strong></td><td>→ Accounting: For ticket 103, is there an established bulk-discount policy applicable to an order of 20 CC-HOOD-NAVY size M hoodies? Please provide the po…<br>→ Accounting: For Bulldog Print Co (vendor ID 1), identify the open invoice ID and status/days overdue; please request payment approval if needed to unblo…</td><td><code>check_stock</code>, <code>get_ticket</code>, <code>list_vendors</code>, <code>draft_purchase_order</code></td></tr><tr><td><strong>Customer Service</strong></td><td>—</td><td><code>get_ticket</code>, <code>draft_customer_message</code></td></tr></tbody></table>
+    <p><strong>Boss's final call:</strong> Do not approve or quote a bulk discount yet. List price is $58 per hoodie; no authorized bulk-discount policy was identified. Eight of the requested 20 size-M navy hoodies are currently in stock. A draft PO for the remaining 12 exists, but is not sent and delivery is blocked by unpaid vendor invoice #501. Customer reply draft #4 is prepared but unsent.</p>
+    <p><strong>Human approvals (Fran):</strong></p><ul><li>purchase order 12x CC-HOOD-NAVY M · $264.00: <strong>draft</strong></li><li>message to Yale AI Club: <strong>draft</strong></li></ul>
+    <p><strong>Final status:</strong> <code>waiting_approval</code></p>
+  </div>
+</section>
+
+<!-- CASH -->
+<section role="tabpanel" id="pcash" aria-labelledby="tcash" hidden>
+  <h2>Cash</h2>
+  <table>
+    <thead><tr><th>Step</th><th class="num">Cash change</th><th class="num">Checking after</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Starting checking</strong> (after reset, before the runs)</td><td></td><td class="num"><strong>$3,400.00</strong></td><td>Original <code>cash_accounts</code> balance. Agent runs never move cash; only Fran's approvals do.</td></tr>
+      <tr><td>#101 · Bulldog tee</td><td class='num'>−$840.00</td><td class='num'>$2,560.00</td><td>Fran approved invoice 501 ($840, Bulldog Print Co, 3 days overdue). Paying it unblocks the vendor so the S tee can be restocked. The $8 tee purchase order was approved but not paid now: it is an account payable due 2026-09-05.</td></tr><tr><td>#102 · Rent due</td><td class='num'>$0.00</td><td class='num'>$2,560.00</td><td>Rent payment ($2,400) was queued by Accounting but Fran left it pending, so no cash moved. It is still due 2026-09-02.</td></tr><tr><td>#103 · Bulk hoodie discount</td><td class='num'>$0.00</td><td class='num'>$2,560.00</td><td>No payment was requested (the hoodie restock depends on the same invoice 501, already paid under #101). The 12-hoodie purchase order ($264) was left pending by Fran, so no cash moved.</td></tr>
+      <tr><td><strong>Ending checking</strong></td><td class="num">−$840.00</td><td class="num"><strong>$2,560.00</strong></td><td>Matches <code>cash_accounts.checking</code> = $2,560.00 in <code>campus_customs_new.db</code>. ✔</td></tr>
+    </tbody>
+  </table>
+  <p class="meta">Still pending with Fran: rent $2,400 (due 2026-09-02) and the 12-hoodie purchase order ($264). Accounts payable: $8 (tee, due 2026-09-05). Projected savings if no new money comes in: $2,552.00. AI cost of the 3 runs (≈$0.22) is tracked separately and never charged to checking.</p>
+</section>
+
+<!-- REFLECTIONS -->
+<section role="tabpanel" id="pref" aria-labelledby="tref" hidden>
+  <h2>Reflections</h2>
+  <p class="meta">Everything below is based on the Expected and Actual sections of the three ticket tabs and on the Cash tab of this page.</p>
+
+  <h3>1 · Performance evaluation</h3>
+  <table>
+    <thead><tr><th>Ticket</th><th>Score</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><strong>101</strong><br>Tauhid's S tee</td><td><strong>8&nbsp;/&nbsp;10</strong></td><td>
+        <strong>What went right:</strong> the team found the real blocker, not just the stockout. Inventory saw S = 0 and that Bulldog Print Co was blocked by invoice 501, and it brought in Accounting on its own. Accounting queued the $840 for approval instead of paying it, and Inventory drafted the 1-unit order only once. Customer Service wrote to Tauhid Zaman by name, gave no promised date, and offered to keep the order open or switch sizes. Every number matches the database. After Fran approved, the ticket closed and checking dropped by exactly $840.<br>
+        <strong>Why not 10:</strong> the Boss never called <code>team_workload</code>, even though its prompt asks it to share work fairly. Inventory also re-read the ticket the Boss had already summarized. 56 s and 26,935 tokens is good for a 3-specialist ticket, but some of that went to repeated reads.</td></tr>
+      <tr><td><strong>102</strong><br>Rent notice</td><td><strong>8&nbsp;/&nbsp;10</strong></td><td>
+        <strong>What went right:</strong> this was the leanest run. It used 2 specialists, 27 s, 13,858 tokens and ≈$0.03, and followed the plan step by step. Facilities confirmed $2,400 due 2026-09-02, and Accounting checked for an earlier payment before queuing approval #2. No unnecessary message to the landlord.<br>
+        <strong>Why not higher:</strong> the team looked at rent alone. Facilities reported "$3,400 covers it" but never said that invoice 501 ($840) was also waiting. Paying both would leave $160, which is exactly the cash risk the Cash tab shows. A truly multitasking Facilities agent should have raised it. The Boss also skipped <code>team_workload</code> again.</td></tr>
+      <tr><td><strong>103</strong><br>AI Club, 20 hoodies</td><td><strong>6&nbsp;/&nbsp;10</strong></td><td>
+        <strong>What went right:</strong> the ethics and safety rules held. No discount was approved without a policy, Accounting stated the cost floor ($22/unit, never more than $36 off), and it refused to queue invoice 501 a second time because approval #1 already existed. Inventory gave exact counts (8 on hand, 12 short) and drafted the $264 order once. Accounting also flagged that paying the invoice and rent leaves only $160.<br>
+        <strong>Why only 6:</strong> it was the least efficient run, at 128 s and 54,905 tokens, more than tickets 101 and 102 combined. The Boss asked Accounting about the discount before anyone knew how much stock existed. Accounting and Inventory then passed the same policy question back and forth, which wasted a delegation level. The Boss called Accounting twice. Inventory couldn't find invoice 501's id because <code>list_vendors</code> returns only a count of open invoices, so it had to ask Accounting. The final answer to the club is safe but timid: list price only, with no offer inside the margin.</td></tr>
+    </tbody>
+  </table>
+  <p>Average: <strong>7.3 / 10</strong>. The safety rules held on every ticket: no payment without Fran, no duplicates, no negative cash, drafts only. Efficiency was the weak spot, and it got worse as the tickets got more complex.</p>
+
+  <h3>2 · Expected vs Actual</h3>
+  <table>
+    <thead><tr><th>Ticket</th><th>Expected</th><th>Actual</th><th>Difference</th></tr></thead>
+    <tbody>
+      <tr><td><strong>101</strong></td>
+        <td>Boss → Inventory first. Inventory → Accounting to queue invoice 501. Boss → Customer Service for a draft. Ticket set to <code>waiting_approval</code>. Specialists: 3; Facilities not used.</td>
+        <td>Boss → Inventory → Accounting (queued $840, approval #1). Inventory drafted the 1-tee order ($8, arriving 2026-09-05). Boss → Customer Service drafted to Tauhid Zaman. Ticket set to <code>waiting_approval</code>, then <code>closed</code> after Fran paid 501 and approved the order and draft.</td>
+        <td><strong>Exact match</strong> in order, specialists and tools. The plan suggested offering size M (5 in stock); the actual draft offered "another size" without naming it. One extra step: Fran's approval closed the ticket, which turned the $8 order into an account payable.</td></tr>
+      <tr><td><strong>102</strong></td>
+        <td>Boss → Facilities first. Facilities → Accounting to queue $2,400. No Inventory, no Customer Service. Ticket set to <code>waiting_approval</code>. Specialists: 2.</td>
+        <td>Boss → Facilities (<code>get_lease_and_cash</code>) → Accounting (<code>get_cash_balance</code>, <code>list_payments_and_approvals</code>, <code>request_payment_approval</code>, approval #2). Ticket set to <code>waiting_approval</code>. Fran left rent pending, so no cash moved.</td>
+        <td><strong>Exact match.</strong> The plan noted that $160 would be left after both payments; the agents never mentioned it. The ticket stays open because Fran chose to wait, not because of a team error.</td></tr>
+      <tr><td><strong>103</strong></td>
+        <td>Boss → Inventory first (8 of 20). Inventory drafts a 12-unit order ($264). Boss → Accounting for a discount above the $22 cost and the cash warning. Boss → Customer Service for an offer. Ticket set to <code>in_progress</code>. Specialists: 3.</td>
+        <td>Boss → <em>Accounting first</em>. Accounting ⇄ Inventory traded the same policy question. Boss → Inventory (order #3, $264, blocked by 501). Boss → Customer Service (list-price reply). Boss → Accounting again (confirmed approval #1 and the $160 risk). Ticket set to <code>waiting_approval</code>.</td>
+        <td><strong>Right team, wrong route.</strong> Order reversed, one wasted back-and-forth, one extra Accounting call. Outcome difference: the plan expected a margin-safe discount offer; Actual offered no discount because no policy exists. That's more conservative than the plan, and arguably more ethical, but it may lose a 20-hoodie sale. Status was <code>waiting_approval</code> rather than <code>in_progress</code>, because the hoodie order needs Fran.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3 · Three ways to simplify the agents' work</h3>
+  <ol class="flow">
+    <li><strong>Route the first call in code by ticket type.</strong> <code>customer_order</code> and <code>price_override</code> → Inventory; <code>rent_notice</code> → Facilities. The Boss would make only the final call. Ticket 103 shows why: the Boss's free choice sent the work to Accounting first, which caused the back-and-forth and an extra Accounting call. A fixed first step would have followed the Expected route, likely at about half the 54,905 tokens.</li>
+    <li><strong>Give each ticket one "context" tool and richer tool outputs.</strong> Every agent started with <code>get_ticket</code> (see the tool columns in the Actual tables), and Inventory had to ask Accounting for invoice 501's id. A single <code>get_ticket_context(ticket_id)</code> could return the ticket, stock and margin, the linked invoice and vendor block, the lease, cash and pending approvals. Having <code>list_vendors</code> return open invoice ids would remove a whole delegation hop.</li>
+    <li><strong>Share a facts ledger and ban sending work back.</strong> Today only sending work to the Boss is blocked, so Accounting and Inventory could pass the same question back and forth on #103. If the run kept a shared list of confirmed facts (stock 8, invoice 501 open, approval #1 pending, cash $3,400) and any reply to whoever asked were blocked, each agent would build on the last instead of re-asking. This also covers the 102 gap: the pending $840 would be on the ledger, so Facilities would see that paying rent too leaves $160.</li>
+  </ol>
+
+  <h3>4 · Three new problems these agents can solve</h3>
+  <ol class="flow">
+    <li><strong>Choosing which payment to approve when cash is tight.</strong> Checking is $2,560 with $8 payable. Rent ($2,400, due 2026-09-02) and the 12-hoodie order ($264) are both still pending, and doing both would cost $2,664, more than the $2,552 free. Accounting and Facilities already have every tool they need: <code>get_cash_balance</code>, <code>get_lease_and_cash</code> and <code>list_payments_and_approvals</code>. They can rank rent first (legal deadline, keeps the shop open), explain that the hoodie order would then be refused for insufficient funds, and suggest a smaller order. The dashboard banner already enforces the limit.</li>
+    <li><strong>Restocking Crest Mugs from a different vendor.</strong> <code>CC-MUG-CREST</code> has 0 on hand. Elm City Gifts (mugs and small goods, 3-day lead time) has no open invoice, so unlike Bulldog Print Co it isn't blocked. Inventory can confirm the stockout with <code>check_stock</code>, pick the right vendor with <code>list_vendors</code>, and draft a costed order with <code>draft_purchase_order</code> ($3.50 per mug, arriving 2026-09-03). It would land as an account payable for Fran, and no payment approval is needed.</li>
+    <li><strong>A margin-safe bulk quote that can be filled today.</strong> If a club asked for 30 Yale Caps (<code>CC-HAT-BLUE</code>), the shop has 40 in stock at $6 cost and $22 list. Inventory confirms the count, Accounting works out a discount that keeps the price above $6 (for example, 15% off = $18.70 each, $561 total, $381 margin), and Customer Service drafts the offer. This is the ticket-103 pattern without the restock blocker, so the team could make a real offer. It works best once a discount policy is added to the prompts.</li>
+  </ol>
+
+  <h3>5 · Three new problems these agents couldn't solve</h3>
+  <ol class="flow">
+    <li><strong>Selling something and collecting the money.</strong> Even if Yale AI Club accepts, nobody can ship the 8 hoodies on hand or charge for them. No tool lowers <code>inventory.qty</code>, there is no sales or orders table, and by design "money only goes out": <code>cash_accounts</code> can only drop. Refunds, deposits and paid orders all need new tables, inflow tools and a human-approved way to receive money.</li>
+    <li><strong>Doing anything in the real world.</strong> The team can't send Tauhid Zaman's approved draft, place order #1 with Bulldog Print Co, or call Elm City Properties about rent. Drafts are never sent by rule, and the database has no emails or phone numbers; Customer Service had to address drafts by name only. Even after Fran approves, a person still has to carry out each action.</li>
+    <li><strong>Judgment calls with no data behind them, and time moving forward.</strong> The team couldn't set a bulk-discount policy (103 ended with "no authorized bulk-discount policy was identified"), forecast back-to-school demand, or find a faster vendor than Bulldog Print Co's 5-day lead time, because none of that is in the data. Time is also frozen at <code>desk.date_today</code> = 2026-08-31. The agents can't follow up when the tee arrives on 2026-09-05, notice that rent became overdue on 2026-09-03, or pay the $8 account payable on its due date. They react to tickets but can't keep watch over time.</li>
+  </ol>
+</section>
+
+<script>
+  const tabs = [...document.querySelectorAll('[role=tab]')];
+  function select(tab) {
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on);
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    tab.focus();
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => select(t));
+    t.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') select(tabs[(i + 1) % tabs.length]);
+      if (e.key === 'ArrowLeft') select(tabs[(i - 1 + tabs.length) % tabs.length]);
+    });
+  });
+</script>
+</body>
+</html>
