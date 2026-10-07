@@ -302,3 +302,5 @@ Prompts written by Fran, recorded verbatim and grouped by problem.
 > 1 name is perfect, just add a -fas63 at the end
 > 2 delete if they are not in the screenshot i sent you. my git structure must replicate the screenshot i sent.
 > 3 ok
+
+> ok run it
